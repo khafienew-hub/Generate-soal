@@ -1,4 +1,6 @@
-const CACHE_NAME = 'bank-soal-v2.1';
+// --- PENTING: GANTI 'v2' KE 'v3', 'v4' SETIAP KALI UPDATE KODE ---
+const CACHE_NAME = 'bank-soal-v2.1'; 
+
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -8,6 +10,9 @@ const ASSETS_TO_CACHE = [
 
 // Install Service Worker
 self.addEventListener('install', (event) => {
+  // Paksa SW baru untuk langsung aktif (skip waiting)
+  self.skipWaiting(); 
+  
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Menyimpan aset offline...');
@@ -18,6 +23,7 @@ self.addEventListener('install', (event) => {
 
 // Activate Service Worker
 self.addEventListener('activate', (event) => {
+  // Paksa SW baru untuk mengontrol semua tab yang terbuka segera
   event.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(
@@ -28,7 +34,7 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim()) 
   );
 });
 
@@ -48,9 +54,11 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
+      }).catch(() => {
+        // Jika offline dan tidak ada di cache, biarkan (atau tampilkan fallback)
       });
 
-      // Kembalikan cache dulu jika ada, sambil update di background
+      // Kembalikan cache dulu (supaya cepat), update berjalan di background
       return cachedResponse || fetchPromise;
     })
   );
