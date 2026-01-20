@@ -2,25 +2,29 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4f46e5">
     <meta name="description" content="Aplikasi Pembuat Soal Otomatis SMP Yalal Wathon Blater">
     
-    <!-- PWA Manifest & Icons -->
+    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
+        
+        
+    <!-- iOS / iPhone Support -->
     <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bank Soal YW">
 
     <title>Bank Soal - SMP Yalal Wathon Blater</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* --- RESET & VARIABLES --- */
         :root {
-            /* Ubah warna sedikit ke hijau/teal khas madrasah/sekolah jika diinginkan, 
-               tapi tetap modern dengan ungu/biru saat ini */
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --secondary: #a855f7;
-            --bg-gradient: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%); /* Sedikit lebih fresh */
+            --bg-gradient: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
             --surface: #ffffff;
             --text-dark: #1f2937;
             --text-gray: #6b7280;
@@ -34,6 +38,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -42,13 +47,14 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overscroll-behavior-y: none;
         }
 
         /* --- HERO SECTION --- */
         .hero {
             background: var(--bg-gradient);
             color: white;
-            padding: 3rem 1.5rem 4rem; /* Extra padding bottom for overlap */
+            padding: 3.5rem 1.5rem 4rem;
             text-align: center;
             border-radius: 0 0 30px 30px;
             box-shadow: var(--shadow);
@@ -56,20 +62,26 @@
             overflow: hidden;
         }
 
-        /* Branding Sekolah */
         .school-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px; 
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(5px);
-            padding: 8px 16px;
+            -webkit-backdrop-filter: blur(5px);
+            padding: 8px 20px;
             border-radius: 50px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.3);
             letter-spacing: 0.5px;
+        }
+
+        .school-logo-img {
+            height: 32px; 
+            width: auto;
+            object-fit: contain;
         }
 
         .hero h1 {
@@ -107,11 +119,11 @@
         /* --- CONTAINER --- */
         .container {
             max-width: 900px;
-            margin: -50px auto 40px; /* Overlap hero */
+            margin: -50px auto 40px;
             padding: 0 1.5rem;
             position: relative;
             z-index: 10;
-            flex: 1; /* Push footer down */
+            flex: 1;
         }
 
         /* --- CARD STYLES --- */
@@ -177,6 +189,8 @@
             transition: border-color 0.2s;
             background: #f9fafb;
             width: 100%;
+            -webkit-appearance: none; 
+            appearance: none;
         }
 
         select:focus, input:focus, textarea:focus {
@@ -215,7 +229,7 @@
             transform: none;
         }
 
-        /* --- ACTION BAR (Results) --- */
+        /* --- ACTION BAR --- */
         .action-bar {
             display: flex;
             gap: 1rem;
@@ -245,7 +259,7 @@
 
         /* --- RESULT SECTIONS --- */
         .result-section {
-            display: none; /* Hidden by default */
+            display: none;
             animation: fadeIn 0.5s ease;
         }
 
@@ -270,10 +284,49 @@
             line-height: 1.6;
             font-size: 0.95rem;
             color: #374151;
-            white-space: pre-wrap; /* Preserve line breaks */
+            /* Kita ubah ini agar kolom berfungsi lebih baik */
+            white-space: normal; 
         }
+
+        /* === FITUR KOLOM GANDA (CSS Column Layout) === */
         
-        /* Specific styling for tables if generated */
+        /* Tampilan Laptop & Print: 2 Kolom (FORCE) */
+        @media (min-width: 768px), print {
+            #output-soal {
+                -webkit-column-count: 2 !important; /* Force Chrome/Safari */
+                -moz-column-count: 2 !important;    /* Force Firefox */
+                column-count: 2 !important;         /* Force Standard */
+                
+                -webkit-column-gap: 3rem;
+                column-gap: 3rem;
+                
+                -webkit-column-rule: 1px solid #cbd5e1;
+                column-rule: 1px solid #cbd5e1;
+                
+                display: block !important;
+                width: 100%;
+            }
+
+            /* Perbaiki agar paragraf soal tidak terpotong */
+            #output-soal p, #output-soal div {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 1em;
+            }
+        }
+
+        /* Style agar Kop Surat membentang (tidak kena kolom) */
+        .header-span {
+            column-span: all;
+            -webkit-column-span: all; /* Support Chrome/Safari lama */
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+
+        /* ============================================= */
+        
         .content-area table {
             width: 100%;
             border-collapse: collapse;
@@ -319,6 +372,18 @@
             background: white;
         }
 
+        /* Alert Box */
+        .alert-error {
+            padding: 15px;
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border-left: 4px solid #ef4444;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -339,6 +404,7 @@
                 padding: 0;
                 width: 100%;
                 max-width: 100%;
+                display: block;
             }
             .card {
                 box-shadow: none;
@@ -355,7 +421,6 @@
                 margin-bottom: 1rem;
                 page-break-inside: avoid;
             }
-            /* Styling khusus untuk kop saat print */
             #output-soal::before {
                 content: "DOKUMEN RAHASIA - SMP YALAL WATHON BLATER";
                 display: block;
@@ -365,6 +430,8 @@
                 margin-bottom: 10px;
                 text-align: right;
             }
+            /* Paksa font hitam saat print */
+            * { color: black !important; }
         }
     </style>
 </head>
@@ -373,7 +440,9 @@
     <!-- HERO SECTION -->
     <header class="hero">
         <div class="school-badge">
-            🏫 SMP Yalal Wathon Blater
+            <img src="logo.png" alt="Logo" class="school-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+            <span style="display:none">🏫</span>
+            SMP Yalal Wathon Blater
         </div>
         <h1>Generator Soal Otomatis</h1>
         <p>Aplikasi Internal Pembuatan Asesmen Sumatif & Formatif</p>
@@ -381,6 +450,9 @@
     </header>
 
     <div class="container">
+        <!-- ERROR ALERT -->
+        <div id="error-alert" class="alert-error"></div>
+
         <!-- INPUT FORM -->
         <div id="form-area" class="card form-container">
             <div class="card-header">
@@ -393,9 +465,8 @@
                     <div class="form-group">
                         <label for="level">Jenjang Pendidikan</label>
                         <select id="level" required onchange="updateClasses()">
-                            <!-- Default select SMP karena ini app SMP Yalal Wathon -->
-                            <option value="Madrasah" selected>Madrasah</option>
                             <option value="SMP/MTs" selected>SMP</option>
+                            <option value="Madrasah">Madrasah</option>
                             <option value="SD/MI">SD / MI</option>
                             <option value="SMA/MA">SMA / MA / SMK</option>
                         </select>
@@ -451,7 +522,7 @@
                     <!-- Topik -->
                     <div class="form-group full-width">
                         <label for="topic">Topik / Materi Spesifik</label>
-                        <input type="text" id="topic" placeholder="Contoh: Thoharoh, Sistem Pencernaan, Teks Deskripsi..." required>
+                        <input type="text" id="topic" placeholder="Contoh: Algoritma, Thoharoh, Sistem Pencernaan..." required>
                     </div>
 
                     <!-- Jumlah Soal -->
@@ -471,10 +542,11 @@
                         </select>
                     </div>
                     
-                    <!-- Optional: Custom API Key for users who want to use their own -->
-                    <div class="form-group full-width">
-                         <label for="apiKey" style="font-size:0.8em; color: #9ca3af;">API Key Gemini (Opsional - biarkan kosong untuk default)</label>
-                         <input type="password" id="apiKey" placeholder="Paste API Key Gemini Anda jika ada">
+                    <!-- API KEY SECTION -->
+                    <div class="form-group full-width" style="background: #fffbe6; padding: 15px; border: 1px dashed #e6c200; border-radius: 8px;">
+                         <label for="apiKey" style="font-weight: 600; color: #b7791f;">🔑 API Key Gemini (Opsional)</label>
+                         <p style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">Key Default Sekolah sudah tertanam.</p>
+                         <input type="password" id="apiKey" placeholder="AIzaSy...">
                     </div>
                 </div>
 
@@ -487,8 +559,8 @@
         <!-- LOADING STATE -->
         <div id="loader" class="loader">
             <div class="spinner"></div>
-            <p><strong>Sistem AI SMP Yalal Wathon</strong> sedang menyusun soal...</p>
-            <small style="color:var(--text-gray)">Mohon tunggu sebentar.</small>
+            <p><strong>Sistem AI SMP Yalal Wathon</strong> sedang menyusun soal kamu ni...</p>
+            <small style="color:var(--text-gray)">Mohon tunggu sebentar ya.</small>
         </div>
 
         <!-- RESULT SECTION -->
@@ -508,19 +580,17 @@
                 </div>
             </div>
 
-            <!-- Kisi-kisi -->
             <div class="result-block">
                 <h3>📊 Kisi-kisi Soal</h3>
                 <div id="output-kisi" class="content-area"></div>
             </div>
 
-            <!-- Daftar Soal -->
             <div class="result-block">
                 <h3>❓ Lembar Soal Siswa</h3>
+                <!-- Output Soal ini yang akan jadi 2 Kolom saat diprint/layar lebar -->
                 <div id="output-soal" class="content-area"></div>
             </div>
 
-            <!-- Kunci & Pembahasan -->
             <div class="result-block">
                 <h3>🔑 Kunci Jawaban & Pembahasan (Untuk Guru)</h3>
                 <div id="output-kunci" class="content-area"></div>
@@ -530,10 +600,10 @@
 
     <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 SMP Yalal Wathon Blater. App Version: <strong>v2.0</strong></p>
+        <p>&copy; 2026 SMP Yalal Wathon Blater. App Version: <strong>v2.8</strong></p>
         <p style="font-size: 0.75rem; margin-top: 5px; opacity: 0.7;">Dikembangkan untuk internal sekolah sebagai alat bantu pembelajaran.</p>
         <p style="margin-top: 10px; font-size: 0.8rem;">
-            Akses via Browser: <a href="https://khafienew-hub.github.io/Generate-soal/" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://khafienew-hub.github.io/Generate-soal/ (Versi Web)</a>
+            Akses via Browser: <a href="https://khafienew-hub.github.io/Generate-soal/" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">https://shorturl.at/JFF2L (Versi Web)</a>
         </p>
     </footer>
 
@@ -544,7 +614,6 @@
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => {
                         console.log('SW Success:', reg.scope);
-                        // Cek update manual setiap kali halaman dimuat
                         reg.update();
                     })
                     .catch(err => console.log('SW Failed:', err));
@@ -552,24 +621,25 @@
         }
 
         // --- CONSTANTS ---
-        const DEFAULT_API_KEY = "AIzaSyA6gzG9PM_YdpI9rZlBdyZpgP_6SYu_PVw"; 
+        const DEFAULT_API_KEY = "AIzaSyDfJQTPGUr-DbQXfehkEeWRkgQ4DF7JtoU"; 
 
         // --- DOM ELEMENTS ---
         const form = document.getElementById('questionForm');
         const loader = document.getElementById('loader');
         const resultArea = document.getElementById('result-area');
         const formArea = document.getElementById('form-area');
+        const errorAlert = document.getElementById('error-alert');
         
         // --- DYNAMIC CLASSES LOGIC ---
         function updateClasses() {
             const level = document.getElementById('level').value;
             const gradeSelect = document.getElementById('grade');
-            gradeSelect.innerHTML = ''; // Clear existing
+            gradeSelect.innerHTML = '';
 
             let options = [];
             if (level === 'SD/MI') {
                 options = [1, 2, 3, 4, 5, 6];
-            } else if (level === 'SMP/MTs') {
+            } else if (level === 'SMP/MTs' || level === 'Madrasah') {
                 options = [7, 8, 9];
             } else if (level === 'SMA/MA') {
                 options = [10, 11, 12];
@@ -594,6 +664,7 @@
         // --- FORM SUBMISSION ---
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
+            errorAlert.style.display = 'none';
             
             // 1. Get Values
             const level = document.getElementById('level').value;
@@ -603,16 +674,24 @@
             const type = document.getElementById('type').value;
             let count = document.getElementById('count').value;
             const difficulty = document.getElementById('difficulty').value;
-            const userKey = document.getElementById('apiKey').value.trim();
+            
+            // Priority: User Key -> Default Key
+            let userKey = document.getElementById('apiKey').value.trim();
+            const apiKey = userKey || DEFAULT_API_KEY;
 
-            if(count > 20) count = 20; // Hard limit
+            if (!apiKey) {
+                showError("API Key belum diisi! Silakan masukkan API Key Anda di kolom yang tersedia (warna kuning).");
+                return;
+            }
+
+            if(count > 20) count = 20;
 
             // 2. UI State -> Loading
             formArea.style.display = 'none';
             loader.style.display = 'flex';
             resultArea.style.display = 'none';
             
-            // 3. Construct Prompt (With School Branding)
+            // 3. Construct Prompt
             const prompt = `
                 Bertindaklah sebagai guru profesional dari SMP Yalal Wathon Blater.
                 Tolong buatkan materi evaluasi / soal ujian dengan spesifikasi berikut:
@@ -639,7 +718,7 @@
                 "Mata Pelajaran: ${subject} | Kelas: ${grade}"
                 ------------------------------------------------
                 
-                Kemudian tuliskan daftar soal lengkap dengan nomor (1, 2, dst). Jika Pilihan Ganda, berikan opsi A, B, C, D (dan E untuk SMA). Jangan sertakan kunci jawaban di bagian ini (agar bisa langsung dicetak untuk siswa).
+                Kemudian tuliskan daftar soal lengkap dengan nomor (1, 2, dst). Jika Pilihan Ganda, berikan opsi A, B, C, D (dan E untuk SMA). Jangan sertakan kunci jawaban di bagian ini.
 
                 Bagian 3: ## Kunci dan Pembahasan
                 Tuliskan kunci jawaban untuk setiap nomor dan pembahasan singkat yang edukatif.
@@ -648,19 +727,11 @@
             `;
 
             // 4. API Call
-            const apiKey = userKey || DEFAULT_API_KEY;
-            
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: prompt }]
-                        }]
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
 
                 const data = await response.json();
@@ -669,63 +740,74 @@
                     throw new Error(data.error.message);
                 }
 
+                if (!data.candidates || !data.candidates[0].content) {
+                    throw new Error("Tidak ada respon dari AI. Coba lagi.");
+                }
+
                 const rawText = data.candidates[0].content.parts[0].text;
                 processAndRender(rawText);
 
             } catch (error) {
-                alert("Gagal membuat soal: " + error.message + ". Coba lagi atau periksa koneksi/API Key.");
                 resetForm();
+                let msg = error.message;
+                if(msg.includes('400') || msg.includes('KEY_INVALID') || msg.includes('API_KEY_INVALID')) {
+                    showError("API Key tidak valid atau expired. Mohon masukkan Key baru yang valid.");
+                } else if (msg.includes('429') || msg.includes('QUOTA')) {
+                    showError("Kuota API Key habis (Limit Harian). Gunakan Key lain atau coba besok.");
+                } else {
+                    showError("Terjadi Kesalahan: " + msg);
+                }
             }
         });
 
+        function showError(msg) {
+            errorAlert.innerText = "⚠️ " + msg;
+            errorAlert.style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
         // --- PROCESSING & RENDERING ---
         function processAndRender(markdownText) {
-            // Helper simple markdown parser
             const parseMD = (text) => {
                 if(!text) return "";
-                // Bold
                 let html = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
                 
-                // Handle text centering logic loosely (for Kop Surat)
-                // If line contains "YALAL WATHON" or "ASESMEN", center it
-                html = html.replace(/(.*YALAL WATHON.*)/g, '<div style="text-align:center; font-weight:bold;">$1</div>');
-                html = html.replace(/(.*ASESMEN.*)/g, '<div style="text-align:center; font-weight:bold;">$1</div>');
+                // --- LOGIKA KOP SURAT (Agar membentang di atas 2 kolom) ---
+                html = html.replace(/(.*YALAL WATHON.*)/g, '<div class="header-span" style="font-weight:bold; font-size:1.1em">$1</div>');
+                html = html.replace(/(.*ASESMEN.*)/g, '<div class="header-span" style="font-weight:bold;">$1</div>');
+                html = html.replace(/(Mata Pelajaran:.*)/g, '<div class="header-span" style="border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px;">$1</div>');
                 
-                // Tables (Simple conversion for grid)
                 if (html.includes('|')) {
                     const lines = html.split('\n');
                     let tableHtml = '<div style="overflow-x:auto;"><table>';
                     let inTable = false;
-                    
                     lines.forEach(line => {
                         if (line.trim().startsWith('|')) {
-                            if (line.includes('---')) return; // Skip separator row
+                            if (line.includes('---')) return;
                             inTable = true;
                             tableHtml += '<tr>';
                             const cells = line.split('|').filter(cell => cell.trim() !== '');
-                            cells.forEach(cell => {
-                                tableHtml += `<td>${cell.trim()}</td>`;
-                            });
+                            cells.forEach(cell => { tableHtml += `<td>${cell.trim()}</td>`; });
                             tableHtml += '</tr>';
                         } else {
-                            if (inTable) {
-                                tableHtml += '</table></div>';
-                                inTable = false;
-                            }
-                            html += line + '<br>'; // Non table lines
+                            if (inTable) { tableHtml += '</table></div>'; inTable = false; }
+                            html += line + '<br>';
                         }
                     });
                     if (inTable) tableHtml += '</table></div>';
                 }
                 
-                // New lines to <br> if not handled
-                if (!html.includes('<table>')) {
-                     html = html.replace(/\n/g, '<br>');
+                // --- PARSER BARU UNTUK KOLOM (PENTING) ---
+                // Mengubah newline menjadi <p> agar browser mau membagi kolom dengan benar
+                // Bukan hanya <br>
+                if (!html.includes('<table>')) { 
+                     // Split berdasarkan double enter (paragraf)
+                     let paras = html.split(/\n\n+/);
+                     html = paras.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
                 }
                 return html;
             };
 
-            // Splitting Sections based on ## Headings
             const parts = markdownText.split('##');
             let kisiContent = "Tidak ada data.";
             let soalContent = "Tidak ada data.";
@@ -742,49 +824,36 @@
                 }
             });
 
-            // Update DOM
             document.getElementById('output-kisi').innerHTML = kisiContent;
             document.getElementById('output-soal').innerHTML = soalContent;
             document.getElementById('output-kunci').innerHTML = kunciContent;
 
-            // Show Results
             loader.style.display = 'none';
             resultArea.style.display = 'block';
-            
-            // Scroll to results
             resultArea.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Helper to format text simply
         function simpleFormat(text) {
-            let formatted = text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+            let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             
-            // Special handling for Kop Surat Center Alignment
-            formatted = formatted.replace(/(YAYASAN.*)/g, '<div style="text-align:center; font-weight:bold; font-size:1.1em">$1</div>');
-            formatted = formatted.replace(/(SMP YALAL WATHON.*)/g, '<div style="text-align:center; font-weight:bold; font-size:1.2em">$1</div>');
-            formatted = formatted.replace(/(ASESMEN.*)/g, '<div style="text-align:center; margin-bottom:10px;">$1</div>');
-            formatted = formatted.replace(/(Mata Pelajaran:.*)/g, '<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px;">$1</div>');
+            // Format Kop Surat agar Span All Columns
+            formatted = formatted.replace(/(YAYASAN.*)/g, '<div class="header-span" style="font-weight:bold; font-size:1.1em">$1</div>');
+            formatted = formatted.replace(/(SMP YALAL WATHON.*)/g, '<div class="header-span" style="font-weight:bold; font-size:1.2em">$1</div>');
+            formatted = formatted.replace(/(ASESMEN.*)/g, '<div class="header-span" style="margin-bottom:10px;">$1</div>');
+            formatted = formatted.replace(/(Mata Pelajaran:.*)/g, '<div class="header-span" style="border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px;">$1</div>');
             
-            formatted = formatted.replace(/\n/g, '<br>'); // Newlines
-            return formatted;
+            // Bungkus dengan P agar kolom rapi (New Update)
+            let paragraphs = formatted.split(/\n\n+/);
+            return paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
         }
 
-        // Helper specifically for Markdown Tables to HTML
         function formatTable(text) {
-            // Check if looks like a table
             if (!text.includes('|')) return simpleFormat(text);
-
             const lines = text.split('\n').filter(l => l.trim() !== '');
             let html = '<div style="overflow-x:auto; width:100%"><table style="width:100%; border-collapse: collapse;">';
             let isHeader = true;
-
             lines.forEach(line => {
-                if (line.includes('---')) {
-                    isHeader = false;
-                    return;
-                }
-                
+                if (line.includes('---')) { isHeader = false; return; }
                 if (line.trim().startsWith('|')) {
                     html += '<tr>';
                     const cells = line.split('|').filter(c => c.trim() !== '');
@@ -796,12 +865,10 @@
                     html += '</tr>';
                 }
             });
-
             html += '</table></div>';
             return html;
         }
 
-        // --- UTILS ---
         function resetForm() {
             resultArea.style.display = 'none';
             formArea.style.display = 'block';
@@ -813,16 +880,9 @@
             const t1 = document.getElementById('output-kisi').innerText;
             const t2 = document.getElementById('output-soal').innerText;
             const t3 = document.getElementById('output-kunci').innerText;
-            
             const allText = `--- KISI-KISI ---\n${t1}\n\n--- SOAL ---\n${t2}\n\n--- KUNCI & PEMBAHASAN ---\n${t3}`;
-            
-            navigator.clipboard.writeText(allText).then(() => {
-                alert("Berhasil disalin ke clipboard!");
-            });
+            navigator.clipboard.writeText(allText).then(() => { alert("Berhasil disalin ke clipboard!"); });
         }
     </script>
 </body>
 </html>
-
-
-
