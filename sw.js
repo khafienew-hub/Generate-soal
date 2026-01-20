@@ -1,5 +1,5 @@
 // --- PENTING: GANTI 'v2' KE 'v3', 'v4' SETIAP KALI UPDATE KODE ---
-const CACHE_NAME = 'bank-soal-v2.1'; 
+const CACHE_NAME = 'bank-soal-v2.2'; 
 
 const ASSETS_TO_CACHE = [
   './',
