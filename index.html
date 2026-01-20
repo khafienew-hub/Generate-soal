@@ -394,7 +394,7 @@
                         <label for="level">Jenjang Pendidikan</label>
                         <select id="level" required onchange="updateClasses()">
                             <!-- Default select SMP karena ini app SMP Yalal Wathon -->
-                            <option value="SMP/MTs" selected>SMP / MTs</option>
+                            <option value="SMP/MTs" selected>SMP</option>
                             <option value="SD/MI">SD / MI</option>
                             <option value="SMA/MA">SMA / MA / SMK</option>
                             <option value="Madrasah">Madrasah</option>
@@ -552,7 +552,7 @@
         }
 
         // --- CONSTANTS ---
-        const DEFAULT_API_KEY = "AIzaSyAKbuiWLkdhB3Cxyy0i6bGeAb2qa-wBEpc"; 
+        const DEFAULT_API_KEY = "AIzaSyA6gzG9PM_YdpI9rZlBdyZpgP_6SYu_PVw"; 
 
         // --- DOM ELEMENTS ---
         const form = document.getElementById('questionForm');
@@ -574,7 +574,7 @@
             } else if (level === 'SMA/MA') {
                 options = [10, 11, 12];
             } else if (level === 'Madrasah') {
-                options = [Kelas 7, Kelas 8, Kelas9];
+                options = [Kelas 7, Kelas 8, Kelas 9];
             }
 
             if(options.length > 0) {
