@@ -395,6 +395,7 @@
                         <select id="level" required onchange="updateClasses()">
                             <!-- Default select SMP karena ini app SMP Yalal Wathon -->
                             <option value="SMP/MTs" selected>SMP</option>
+                            <option value="Madrasah" selected>Madrasah</option>
                             <option value="SD/MI">SD / MI</option>
                             <option value="SMA/MA">SMA / MA / SMK</option>
                         </select>
@@ -571,6 +572,8 @@
                 options = [7, 8, 9];
             } else if (level === 'SMA/MA') {
                 options = [10, 11, 12];
+            } else if (level === 'Madrasah') {
+                options = [7, 8, 9];
             }
 
             if(options.length > 0) {
