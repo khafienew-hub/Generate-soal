@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="description" content="Aplikasi Pembuat Soal Otomatis SMP Yalal Wathon Blater">
+    
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <title>Bank Soal - SMP Yalal Wathon Blater</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            /* Ubah warna sedikit ke hijau/teal khas madrasah/sekolah jika diinginkan, 
+               tapi tetap modern dengan ungu/biru saat ini */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --bg-gradient: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%); /* Sedikit lebih fresh */
+            --surface: #ffffff;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f3f4f6;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 3rem 1.5rem 4rem; /* Extra padding bottom for overlap */
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Branding Sekolah */
+        .school-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+        }
+
+        .hero-btn {
+            background: white;
+            color: var(--primary);
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        /* --- CONTAINER --- */
+        .container {
+            max-width: 900px;
+            margin: -50px auto 40px; /* Overlap hero */
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
+            flex: 1; /* Push footer down */
+        }
+
+        /* --- CARD STYLES --- */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- FORM GRID --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+            .hero h1 { font-size: 2.5rem; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+
+        select, input, textarea {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #f9fafb;
+            width: 100%;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* --- GENERATE BUTTON --- */
+        .btn-generate {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* --- ACTION BAR (Results) --- */
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* --- RESULT SECTIONS --- */
+        .result-section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-block {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .result-block h3 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .content-area {
+            line-height: 1.6;
+            font-size: 0.95rem;
+            color: #374151;
+            white-space: pre-wrap; /* Preserve line breaks */
+        }
+        
+        /* Specific styling for tables if generated */
+        .content-area table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .content-area th, .content-area td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
+        }
+        .content-area th {
+            background-color: #e5e7eb;
+        }
+
+        /* --- LOADING ANIMATION --- */
+        .loader {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+            background: white;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            .hero, .form-container, .btn-generate, .action-bar, footer {
+                display: none !important;
+            }
+            body, .container {
+                background: white;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+            .card {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+            .result-section {
+                display: block !important;
+            }
+            .result-block {
+                border: none;
+                background: white;
+                padding: 0;
+                margin-bottom: 1rem;
+                page-break-inside: avoid;
+            }
+            /* Styling khusus untuk kop saat print */
+            #output-soal::before {
+                content: "DOKUMEN RAHASIA - SMP YALAL WATHON BLATER";
+                display: block;
+                font-size: 10px;
+                color: #999;
+                border-bottom: 1px solid #ccc;
+                margin-bottom: 10px;
+                text-align: right;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="school-badge">
+            🏫 SMP Yalal Wathon Blater
+        </div>
+        <h1>Generator Soal Otomatis</h1>
+        <p>Aplikasi Internal Pembuatan Asesmen Sumatif & Formatif</p>
+        <a href="#form-area" class="hero-btn">Mulai Buat Soal</a>
+    </header>
+
+    <div class="container">
+        <!-- INPUT FORM -->
+        <div id="form-area" class="card form-container">
+            <div class="card-header">
+                <h2 class="card-title">⚙️ Konfigurasi Soal</h2>
+            </div>
+            
+            <form id="questionForm">
+                <div class="form-grid">
+                    <!-- Jenjang -->
+                    <div class="form-group">
+                        <label for="level">Jenjang Pendidikan</label>
+                        <select id="level" required onchange="updateClasses()">
+                            <!-- Default select SMP karena ini app SMP Yalal Wathon -->
+                            <option value="SMP/MTs" selected>SMP / MTs</option>
+                            <option value="SD/MI">SD / MI</option>
+                            <option value="SMA/MA">SMA / MA / SMK</option>
+                        </select>
+                    </div>
+
+                    <!-- Kelas -->
+                    <div class="form-group">
+                        <label for="grade">Kelas</label>
+                        <select id="grade" required>
+                            <option value="7">Kelas 7</option>
+                            <option value="8">Kelas 8</option>
+                            <option value="9">Kelas 9</option>
+                        </select>
+                    </div>
+
+                    <!-- Mata Pelajaran -->
+                    <div class="form-group">
+                        <label for="subject">Mata Pelajaran</label>
+                        <select id="subject" required>
+                            <option value="" disabled selected>Pilih Mapel...</option>
+                            <option value="Matematika">Matematika</option>
+                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                            <option value="IPA (Sains)">IPA (Sains)</option>
+                            <option value="IPS">IPS</option>
+                            <option value="Bahasa Inggris">Bahasa Inggris</option>
+                            <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                            <option value="PKN">PKN</option>
+                            <option value="PAI & Budi Pekerti">PAI & Budi Pekerti</option>
+                            <option value="Aswaja / Ke-NU-an">Aswaja / Ke-NU-an</option>
+                            <option value="Bahasa Arab">Bahasa Arab</option>
+                            <option value="Fiqih">Fiqih</option>
+                            <option value="SKI">SKI</option>
+                            <option value="Bahasa Jawa">Bahasa Jawa</option>
+                            <option value="Seni Budaya">Seni Budaya</option>
+                            <option value="PJOK">PJOK</option>
+                            <option value="Lainnya">Lainnya (Tulis di Topik)</option>
+                        </select>
+                    </div>
+
+                    <!-- Tipe Soal -->
+                    <div class="form-group">
+                        <label for="type">Tipe Soal</label>
+                        <select id="type" required>
+                            <option value="Pilihan Ganda">Pilihan Ganda (PG)</option>
+                            <option value="Pilihan Ganda Kompleks">Pilihan Ganda Kompleks</option>
+                            <option value="Isian Singkat">Isian Singkat</option>
+                            <option value="Uraian / Essay">Uraian / Essay</option>
+                            <option value="Benar Salah">Benar / Salah</option>
+                        </select>
+                    </div>
+
+                    <!-- Topik -->
+                    <div class="form-group full-width">
+                        <label for="topic">Topik / Materi Spesifik</label>
+                        <input type="text" id="topic" placeholder="Contoh: Thoharoh, Sistem Pencernaan, Teks Deskripsi..." required>
+                    </div>
+
+                    <!-- Jumlah Soal -->
+                    <div class="form-group">
+                        <label for="count">Jumlah Soal (Maks. 20)</label>
+                        <input type="number" id="count" min="1" max="20" value="10" required>
+                    </div>
+
+                    <!-- Kesulitan -->
+                    <div class="form-group">
+                        <label for="difficulty">Tingkat Kesulitan</label>
+                        <select id="difficulty" required>
+                            <option value="Campuran (C1-C6)">Campuran (C1-C6) - Standar</option>
+                            <option value="Mudah (LOTS)">Mudah (LOTS)</option>
+                            <option value="Sedang (MOTS)">Sedang (MOTS)</option>
+                            <option value="Sulit (HOTS)">Sulit (HOTS)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Optional: Custom API Key for users who want to use their own -->
+                    <div class="form-group full-width">
+                         <label for="apiKey" style="font-size:0.8em; color: #9ca3af;">API Key Gemini (Opsional - biarkan kosong untuk default)</label>
+                         <input type="password" id="apiKey" placeholder="Paste API Key Gemini Anda jika ada">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-generate">
+                    <span>✨ Buat Soal Sekarang</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- LOADING STATE -->
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+            <p><strong>Sistem AI SMP Yalal Wathon</strong> sedang menyusun soal...</p>
+            <small style="color:var(--text-gray)">Mohon tunggu sebentar.</small>
+        </div>
+
+        <!-- RESULT SECTION -->
+        <div id="result-area" class="card result-section">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2 class="card-title">📝 Dokumen Soal</h2>
+                <div class="action-bar" style="margin-bottom: 0;">
+                    <button class="btn-outline" onclick="copyToClipboard()">
+                        📋 Copy Teks
+                    </button>
+                    <button class="btn-outline" onclick="window.print()">
+                        🖨️ Cetak PDF
+                    </button>
+                    <button class="btn-outline" onclick="resetForm()" style="border-color: #ef4444; color: #ef4444;">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kisi-kisi -->
+            <div class="result-block">
+                <h3>📊 Kisi-kisi Soal</h3>
+                <div id="output-kisi" class="content-area"></div>
+            </div>
+
+            <!-- Daftar Soal -->
+            <div class="result-block">
+                <h3>❓ Lembar Soal Siswa</h3>
+                <div id="output-soal" class="content-area"></div>
+            </div>
+
+            <!-- Kunci & Pembahasan -->
+            <div class="result-block">
+                <h3>🔑 Kunci Jawaban & Pembahasan (Untuk Guru)</h3>
+                <div id="output-kunci" class="content-area"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2024 SMP Yalal Wathon Blater. All Rights Reserved.</p>
+        <p style="font-size: 0.75rem; margin-top: 5px; opacity: 0.7;">Dikembangkan untuk internal sekolah sebagai alat bantu pembelajaran berbasis AI.</p>
+    </footer>
+
+    <script>
+        // --- PWA REGISTRATION ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW Success:', reg.scope))
+                    .catch(err => console.log('SW Failed:', err));
+            });
+        }
+
+        // --- CONSTANTS ---
+        const DEFAULT_API_KEY = "AIzaSyAecqGQ_2yzjCvP7vHSK1IPyM3kKSTDPjg"; 
+
+        // --- DOM ELEMENTS ---
+        const form = document.getElementById('questionForm');
+        const loader = document.getElementById('loader');
+        const resultArea = document.getElementById('result-area');
+        const formArea = document.getElementById('form-area');
+        
+        // --- DYNAMIC CLASSES LOGIC ---
+        function updateClasses() {
+            const level = document.getElementById('level').value;
+            const gradeSelect = document.getElementById('grade');
+            gradeSelect.innerHTML = ''; // Clear existing
+
+            let options = [];
+            if (level === 'SD/MI') {
+                options = [1, 2, 3, 4, 5, 6];
+            } else if (level === 'SMP/MTs') {
+                options = [7, 8, 9];
+            } else if (level === 'SMA/MA') {
+                options = [10, 11, 12];
+            }
+
+            if(options.length > 0) {
+                options.forEach(cls => {
+                    const opt = document.createElement('option');
+                    opt.value = cls;
+                    opt.textContent = `Kelas ${cls}`;
+                    gradeSelect.appendChild(opt);
+                });
+            } else {
+                 const opt = document.createElement('option');
+                 opt.textContent = "Pilih Jenjang Dulu";
+                 gradeSelect.appendChild(opt);
+            }
+        }
+
+        // --- FORM SUBMISSION ---
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // 1. Get Values
+            const level = document.getElementById('level').value;
+            const grade = document.getElementById('grade').value;
+            const subject = document.getElementById('subject').value;
+            const topic = document.getElementById('topic').value;
+            const type = document.getElementById('type').value;
+            let count = document.getElementById('count').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const userKey = document.getElementById('apiKey').value.trim();
+
+            if(count > 20) count = 20; // Hard limit
+
+            // 2. UI State -> Loading
+            formArea.style.display = 'none';
+            loader.style.display = 'flex';
+            resultArea.style.display = 'none';
+            
+            // 3. Construct Prompt (With School Branding)
+            const prompt = `
+                Bertindaklah sebagai guru profesional dari SMP Yalal Wathon Blater.
+                Tolong buatkan materi evaluasi / soal ujian dengan spesifikasi berikut:
+                - Sekolah: SMP Yalal Wathon Blater
+                - Jenjang: ${level}
+                - Kelas: ${grade}
+                - Mata Pelajaran: ${subject}
+                - Topik Materi: ${topic}
+                - Tipe Soal: ${type}
+                - Jumlah Soal: ${count}
+                - Tingkat Kesulitan: ${difficulty}
+
+                Instruksi Output Wajib (Format Markdown):
+                Pisahkan responmu menjadi 3 bagian yang jelas menggunakan Heading level 2 (##).
+                
+                Bagian 1: ## Kisi-kisi
+                Buatkan tabel kisi-kisi sederhana yang mencakup Kompetensi Dasar (perkiraan), Indikator Soal, Level Kognitif, dan Nomor Soal.
+
+                Bagian 2: ## Soal
+                PENTING: Awali bagian ini dengan KOP SOAL teks sederhana (center alignment secara markdown jika bisa, atau teks biasa) yang bertuliskan:
+                "YAYASAN YALAL WATHON BLATER"
+                "SMP YALAL WATHON BLATER"
+                "ASESMEN SUMATIF / FORMATIF"
+                "Mata Pelajaran: ${subject} | Kelas: ${grade}"
+                ------------------------------------------------
+                
+                Kemudian tuliskan daftar soal lengkap dengan nomor (1, 2, dst). Jika Pilihan Ganda, berikan opsi A, B, C, D (dan E untuk SMA). Jangan sertakan kunci jawaban di bagian ini (agar bisa langsung dicetak untuk siswa).
+
+                Bagian 3: ## Kunci dan Pembahasan
+                Tuliskan kunci jawaban untuk setiap nomor dan pembahasan singkat yang edukatif.
+
+                Gunakan Bahasa Indonesia yang baku, jelas, dan sesuai kaidah pendidikan.
+            `;
+
+            // 4. API Call
+            const apiKey = userKey || DEFAULT_API_KEY;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                const rawText = data.candidates[0].content.parts[0].text;
+                processAndRender(rawText);
+
+            } catch (error) {
+                alert("Gagal membuat soal: " + error.message + ". Coba lagi atau periksa koneksi/API Key.");
+                resetForm();
+            }
+        });
+
+        // --- PROCESSING & RENDERING ---
+        function processAndRender(markdownText) {
+            // Helper simple markdown parser
+            const parseMD = (text) => {
+                if(!text) return "";
+                // Bold
+                let html = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                
+                // Handle text centering logic loosely (for Kop Surat)
+                // If line contains "YALAL WATHON" or "ASESMEN", center it
+                html = html.replace(/(.*YALAL WATHON.*)/g, '<div style="text-align:center; font-weight:bold;">$1</div>');
+                html = html.replace(/(.*ASESMEN.*)/g, '<div style="text-align:center; font-weight:bold;">$1</div>');
+                
+                // Tables (Simple conversion for grid)
+                if (html.includes('|')) {
+                    const lines = html.split('\n');
+                    let tableHtml = '<div style="overflow-x:auto;"><table>';
+                    let inTable = false;
+                    
+                    lines.forEach(line => {
+                        if (line.trim().startsWith('|')) {
+                            if (line.includes('---')) return; // Skip separator row
+                            inTable = true;
+                            tableHtml += '<tr>';
+                            const cells = line.split('|').filter(cell => cell.trim() !== '');
+                            cells.forEach(cell => {
+                                tableHtml += `<td>${cell.trim()}</td>`;
+                            });
+                            tableHtml += '</tr>';
+                        } else {
+                            if (inTable) {
+                                tableHtml += '</table></div>';
+                                inTable = false;
+                            }
+                            html += line + '<br>'; // Non table lines
+                        }
+                    });
+                    if (inTable) tableHtml += '</table></div>';
+                }
+                
+                // New lines to <br> if not handled
+                if (!html.includes('<table>')) {
+                     html = html.replace(/\n/g, '<br>');
+                }
+                return html;
+            };
+
+            // Splitting Sections based on ## Headings
+            const parts = markdownText.split('##');
+            let kisiContent = "Tidak ada data.";
+            let soalContent = "Tidak ada data.";
+            let kunciContent = "Tidak ada data.";
+
+            parts.forEach(part => {
+                const lower = part.toLowerCase();
+                if (lower.includes('kisi')) {
+                    kisiContent = formatTable(part.replace(/kisi-kisi/i, '').trim());
+                } else if (lower.includes('soal') && !lower.includes('kunci') && !lower.includes('indikator')) {
+                    soalContent = simpleFormat(part.replace(/soal/i, '').trim());
+                } else if (lower.includes('kunci') || lower.includes('pembahasan')) {
+                    kunciContent = simpleFormat(part.replace(/kunci dan pembahasan|kunci jawaban/i, '').trim());
+                }
+            });
+
+            // Update DOM
+            document.getElementById('output-kisi').innerHTML = kisiContent;
+            document.getElementById('output-soal').innerHTML = soalContent;
+            document.getElementById('output-kunci').innerHTML = kunciContent;
+
+            // Show Results
+            loader.style.display = 'none';
+            resultArea.style.display = 'block';
+            
+            // Scroll to results
+            resultArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Helper to format text simply
+        function simpleFormat(text) {
+            let formatted = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+            
+            // Special handling for Kop Surat Center Alignment
+            formatted = formatted.replace(/(YAYASAN.*)/g, '<div style="text-align:center; font-weight:bold; font-size:1.1em">$1</div>');
+            formatted = formatted.replace(/(SMP YALAL WATHON.*)/g, '<div style="text-align:center; font-weight:bold; font-size:1.2em">$1</div>');
+            formatted = formatted.replace(/(ASESMEN.*)/g, '<div style="text-align:center; margin-bottom:10px;">$1</div>');
+            formatted = formatted.replace(/(Mata Pelajaran:.*)/g, '<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px;">$1</div>');
+            
+            formatted = formatted.replace(/\n/g, '<br>'); // Newlines
+            return formatted;
+        }
+
+        // Helper specifically for Markdown Tables to HTML
+        function formatTable(text) {
+            // Check if looks like a table
+            if (!text.includes('|')) return simpleFormat(text);
+
+            const lines = text.split('\n').filter(l => l.trim() !== '');
+            let html = '<div style="overflow-x:auto; width:100%"><table style="width:100%; border-collapse: collapse;">';
+            let isHeader = true;
+
+            lines.forEach(line => {
+                if (line.includes('---')) {
+                    isHeader = false;
+                    return;
+                }
+                
+                if (line.trim().startsWith('|')) {
+                    html += '<tr>';
+                    const cells = line.split('|').filter(c => c.trim() !== '');
+                    cells.forEach(cell => {
+                        html += isHeader 
+                            ? `<th style="background:#f3f4f6; padding:10px; border:1px solid #ddd;">${cell.trim()}</th>`
+                            : `<td style="padding:10px; border:1px solid #ddd;">${cell.trim()}</td>`;
+                    });
+                    html += '</tr>';
+                }
+            });
+
+            html += '</table></div>';
+            return html;
+        }
+
+        // --- UTILS ---
+        function resetForm() {
+            resultArea.style.display = 'none';
+            formArea.style.display = 'block';
+            loader.style.display = 'none';
+            window.scrollTo(0,0);
+        }
+
+        function copyToClipboard() {
+            const t1 = document.getElementById('output-kisi').innerText;
+            const t2 = document.getElementById('output-soal').innerText;
+            const t3 = document.getElementById('output-kunci').innerText;
+            
+            const allText = `--- KISI-KISI ---\n${t1}\n\n--- SOAL ---\n${t2}\n\n--- KUNCI & PEMBAHASAN ---\n${t3}`;
+            
+            navigator.clipboard.writeText(allText).then(() => {
+                alert("Berhasil disalin ke clipboard!");
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
