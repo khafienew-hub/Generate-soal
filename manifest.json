@@ -1,0 +1,22 @@
+{
+  "name": "Bank Soal SMP Yalal Wathon",
+  "short_name": "Bank Soal",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "description": "Aplikasi Pembuat Soal Otomatis SMP Yalal Wathon Blater",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-513.png",
+      "type": "image/png",
+      "sizes": "513x513"
+    }
+  ]
+}
